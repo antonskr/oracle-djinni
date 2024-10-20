@@ -25,7 +25,15 @@ class Bot {
             command.handle();
         }
 
-        this.bot.launch();
+        const PORT = Number(this.configService.get('PORT'));
+        this.bot.launch({
+            webhook: {
+                domain: 'https://polar-taiga-55990-4eb2c6f0fedb.herokuapp.com/',
+                port: PORT,
+            }
+        });
+
+        console.log(`Bot is running on port ${PORT}`);
     }
 }
 
