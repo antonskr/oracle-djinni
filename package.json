@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "description": "djini parser bot",
   "main": "index.js",
+  "engines": {
+    "node": ">=14.0.0"
+  },
   "scripts": {
     "build": "tsc",
     "start": "npm run build && node ./dist/app.js",
