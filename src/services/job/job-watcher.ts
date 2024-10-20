@@ -1,4 +1,4 @@
-import * as fs from 'fs/promises'; // Используем промисы для работы с файловой системой
+import * as fs from 'fs/promises'; 
 import { IBotContext } from '../../context/context.interface';
 import { JobFetcher } from './job-fetcher';
 
@@ -14,11 +14,12 @@ export class JobWatcher {
             return;
         }
 
-        await this.jobFetcher.fetchJobs(ctx); // Первичная загрузка данных
+        await this.jobFetcher.fetchJobs(ctx); // Initial data load
+
 
         this.intervalId = setInterval(async () => {
             await this.jobFetcher.fetchJobs(ctx);
-        }, 10000); // каждые 10 секунд
+        }, 1000 * 60 * 1); // every 1 minute
 
         await this.updateStatus(true);
     }
