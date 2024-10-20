@@ -21,7 +21,7 @@ export class JobFetcher {
 
             const newJobs = this.filterNewJobs(allJobs, ids);
             if (newJobs.length === 0) {
-                console.log('No new jobs available', jobsData);
+                console.log('No new jobs available');
                 return;
             }
 
