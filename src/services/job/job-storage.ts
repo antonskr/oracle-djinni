@@ -1,23 +1,31 @@
-import * as fs from 'fs';
+import { JobModel } from '../../models/job-model.js';
 
 export class JobStorage {
-    private readonly filePath = 'src/storage/data.json';
-
-    readJobs(): any[] {
+    async readJobs(): Promise<any[]> {
         try {
-            const data = fs.readFileSync(this.filePath, 'utf8');
-            return JSON.parse(data);
+            const jobs = await JobModel.find();
+            return jobs;
         } catch (error) {
-            console.error('Error reading jobs file:', error);
+            console.error('Error reading jobs from database:', error);
             return [];
         }
     }
 
-    updateJobs(jobs: any[]): void {
+    async updateJobs(jobs: any[]): Promise<void> {
         try {
-            fs.writeFileSync(this.filePath, JSON.stringify(jobs, null, 2));
+            for (const job of jobs) {
+                const existingJob = await JobModel.findOne({ id: job.id });
+                if (existingJob) {
+                    await JobModel.updateOne({ id: job.id }, job);
+                    console.log(`Job with ID ${job.id} updated.`);
+                } else {
+                    const newJob = new JobModel(job);
+                    await newJob.save();
+                    console.log(`Job with ID ${job.id} added.`);
+                }
+            }
         } catch (error) {
-            console.error('Error writing jobs file:', error);
+            console.error('Error updating jobs in database:', error);
         }
     }
 }

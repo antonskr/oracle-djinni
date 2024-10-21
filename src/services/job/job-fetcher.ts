@@ -5,13 +5,15 @@ import { JobStorage } from './job-storage';
 export class JobFetcher {
     constructor(
         private jobDataService: JobDataService,
-        private jobStorage: JobStorage
+        private jobStorage: JobStorage,
     ) {}
 
     async fetchJobs(ctx: IBotContext): Promise<void> {
         try {
-            const jobsData = this.jobStorage.readJobs();
+            const jobsData = await this.jobStorage.readJobs();
             const ids = jobsData.map((job: any) => job.id);
+
+            console.log('read jobsData...', jobsData);
 
             const allJobs = await this.jobDataService.getJobListings();
             if (allJobs.length === 0) {
@@ -26,7 +28,7 @@ export class JobFetcher {
             }
 
             this.notifyUsers(newJobs, ctx);
-            this.jobStorage.updateJobs([...newJobs, ...jobsData]);
+            this.jobStorage.updateJobs(newJobs);
 
         } catch (error) {
             console.error('Error fetching job data:', error);

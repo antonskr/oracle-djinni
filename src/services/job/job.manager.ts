@@ -1,4 +1,5 @@
 import { ConfigService } from '../../config/config.service';
+import { DatabaseConnection } from '../../services/db-connection';
 import { JobDataService } from './job.service';
 import { JobStorage } from './job-storage';
 import { JobFetcher } from './job-fetcher';
@@ -9,7 +10,6 @@ export class JobManager {
     private jobStorage: JobStorage;
     private jobFetcher: JobFetcher;
     private jobWatcher: JobWatcher;
-
     constructor(private readonly configService: ConfigService) {
         this.jobDataService = new JobDataService(this.configService.get('DJ_TOKEN'));
         this.jobStorage = new JobStorage();
