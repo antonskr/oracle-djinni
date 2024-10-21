@@ -1,9 +1,11 @@
 import { parse } from 'node-html-parser';
+import { Job } from '../../models/job-model';
+import logger from '../logger';
 
 export class JobDataService {
     constructor(private readonly token: string) {}
 
-    async getJobListings(): Promise<any[]> {
+    async getJobListings(): Promise<Job[]> {
         const html = await this.fetchJobData();
         return this.parseJobItems(html);
     }
@@ -15,17 +17,18 @@ export class JobDataService {
         });
 
         if (!response.ok) {
+            logger.error('Network response was not ok:', response.statusText);
             throw new Error('Network response was not ok');
         }
 
         return await response.text();
     }
 
-    private parseJobItems(html: string): any[] {
+    private parseJobItems(html: string): Job[] {
         const root = parse(html);
         const list = root.querySelector('.list-unstyled');
-        const items = list?.querySelectorAll('li') || [];
-        const jobs = [];
+        const items = Array.from(list?.querySelectorAll('li') || []);
+        const jobs: Job[] = [];
 
         for (const item of items) {
             const id = item.getAttribute('id');
@@ -37,7 +40,7 @@ export class JobDataService {
             const jobLink = jobData?.getAttribute('href');
             const description = item.querySelector('.js-truncated-text')?.text;
 
-            if (companyName && infoTags.length && jobTitle && jobLink && description) {
+            if (id && companyName && infoTags.length && jobTitle && jobLink && description) {
                 jobs.push({
                     id,
                     companyName,
@@ -45,7 +48,7 @@ export class JobDataService {
                     jobLink,
                     infoTags,
                     description,
-                });
+                } as Job);
             }
         }
 

@@ -2,8 +2,8 @@ import { Telegraf } from 'telegraf';
 import { StopCommand } from './commands/stop.command';
 import { StartCommand } from './commands/start.command';
 import { ConfigService } from './config/config.service';
-import { JobManager } from './services/job/job.manager'; // Импортируйте JobManager
-import { DatabaseConnection } from './services/db-connection'; // Импортируйте DatabaseConnection
+import { JobManager } from './services/job/job.manager';
+import { DatabaseConnection } from './services/db-connection';
 
 class Bot {
     bot: Telegraf<any>;
@@ -14,10 +14,13 @@ class Bot {
     }
 
     async init() {  
-        const jobManager = new JobManager(this.configService); // Измените конструктор
-        const jobWatcher = jobManager.getJobWatcher(); // Получение JobWatcher
-        this.commands.push(new StartCommand(this.bot, jobWatcher, DatabaseConnection.getInstance(this.configService))); // Передача экземпляра
-        this.commands.push(new StopCommand(this.bot, jobWatcher, DatabaseConnection.getInstance(this.configService))); // Передача экземпляра
+        const jobManager = new JobManager(this.configService);
+        const jobWatcher = jobManager.getJobWatcher();
+        
+        this.commands = [
+            new StartCommand(this.bot, jobWatcher, DatabaseConnection.getInstance(this.configService)),
+            new StopCommand(this.bot, jobWatcher, DatabaseConnection.getInstance(this.configService))
+        ];
 
         for (const command of this.commands) {
             command.handle();

@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import logger from './logger'; // Импортируйте логгер
 import { ConfigService } from '../config/config.service';
 
 export class DatabaseConnection {
@@ -14,7 +15,7 @@ export class DatabaseConnection {
 
     async connect() {
         if (mongoose.connection.readyState === 1) { // if already connected 
-            console.log('Already connected to the database');
+            logger.info('Already connected to the database'); // Используйте логгер
             return;
         }
 
@@ -24,19 +25,19 @@ export class DatabaseConnection {
         const db = mongoose.connection;
         db.on('error', console.error.bind(console, 'connection error:'));
         db.once('open', () => {
-            console.log('Connected to the database');
+            logger.info('Connected to the database');
         });
 
-        console.log('Connected to the database');
+        logger.info('Connecting to the database...');
         return connection;
     }
 
     async disconnect() {
         try {
             await mongoose.disconnect();
-            console.log('Disconnected from the database');
+            logger.info('Disconnected from the database'); // Используйте логгер
         } catch (error) {
-            console.error('Error disconnecting from the database', error);
+            logger.error('Error disconnecting from the database', error); // Используйте логгер
         }
     }
 }

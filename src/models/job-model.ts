@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 // Интерфейс для типов данных
-interface Job extends Document {
+export interface Job extends Document {
   id: string;
   companyName: string;
   jobTitle: string;

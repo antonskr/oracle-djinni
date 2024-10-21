@@ -1,6 +1,7 @@
 import * as fs from 'fs/promises'; 
 import { IBotContext } from '../../context/context.interface';
 import { JobFetcher } from './job-fetcher';
+import logger from '../logger';
 
 export class JobWatcher {
     private intervalId: NodeJS.Timeout | null = null;
@@ -42,7 +43,7 @@ export class JobWatcher {
             const { isRunning } = JSON.parse(data);
             return isRunning;
         } catch (error) {
-            console.error('Error reading status file:', error);
+            logger.error('Error reading status file:', error);
             return false;
         }
     }
@@ -52,7 +53,7 @@ export class JobWatcher {
             const status = { isRunning };
             await fs.writeFile(this.statusFile, JSON.stringify(status, null, 2));
         } catch (error) {
-            console.error('Error writing status file:', error);
+            logger.error('Error writing status file:', error);
         }
     }
 }

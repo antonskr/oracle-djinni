@@ -1,6 +1,8 @@
+import { Job } from '../../models/job-model';
+import { JobStorage } from './job-storage';
 import { IBotContext } from '../../context/context.interface';
 import { JobDataService } from './job.service';
-import { JobStorage } from './job-storage';
+import logger from '../logger';
 
 export class JobFetcher {
     constructor(
@@ -11,19 +13,17 @@ export class JobFetcher {
     async fetchJobs(ctx: IBotContext): Promise<void> {
         try {
             const jobsData = await this.jobStorage.readJobs();
-            const ids = jobsData.map((job: any) => job.id);
+            const ids = jobsData.map((job: Job) => job.id);
 
-            console.log('read jobsData...', jobsData);
-
-            const allJobs = await this.jobDataService.getJobListings();
-            if (allJobs.length === 0) {
-                console.log('No jobs from the API response');
+            const allDjinniJobs = await this.jobDataService.getJobListings();
+            if (allDjinniJobs.length === 0) {
+                logger.error('No jobs from the Djinni API');
                 return;
             }
 
-            const newJobs = this.filterNewJobs(allJobs, ids);
+            const newJobs = this.filterNewJobs(allDjinniJobs, ids);
             if (newJobs.length === 0) {
-                console.log('No new jobs available');
+                logger.info('No new jobs available');
                 return;
             }
 
@@ -31,13 +31,13 @@ export class JobFetcher {
             this.jobStorage.updateJobs(newJobs);
 
         } catch (error) {
-            console.error('Error fetching job data:', error);
+            logger.error('Error fetching job data:', error);
             ctx.reply('Failed to fetch job data. Please try again later.');
         }
     }
 
-    private filterNewJobs(allJobs: any[], existingIds: any[]): any[] {
-        return allJobs.filter(job => !existingIds.includes(job.id));
+    private filterNewJobs(allDjinniJobs: any[], existingIds: any[]): any[] {
+        return allDjinniJobs.filter(job => !existingIds.includes(job.id));
     }
 
     private notifyUsers(newJobs: any[], ctx: IBotContext): void {

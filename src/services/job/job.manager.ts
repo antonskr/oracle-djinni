@@ -1,5 +1,4 @@
 import { ConfigService } from '../../config/config.service';
-import { DatabaseConnection } from '../../services/db-connection';
 import { JobDataService } from './job.service';
 import { JobStorage } from './job-storage';
 import { JobFetcher } from './job-fetcher';
